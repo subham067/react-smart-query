@@ -67,6 +67,15 @@ React Smart Query takes the heavy lifting out of state mutability. It delegates 
 | **Pagination + mutation fix** | ❌ | ✅ |
 | **Global mutations** | ❌ | ✅ |
 
+### How it compares to WatermelonDB
+
+While **WatermelonDB** is a full relational database (SQLite), **React Smart Query** is a "Smart Cache."
+
+- **WatermelonDB** is best for apps with **100k+ records** requiring complex SQL joins.
+- **React Smart Query** is best for apps with **up to 10k items** where you want **zero native overhead** and **instant integration** with TanStack Query.
+
+[Read the full comparison guide →](./docs/COMPETITION_ANALYSIS.md)
+
 ---
 
 ## 📦 Installation
