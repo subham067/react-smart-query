@@ -1,4 +1,4 @@
-import { AnyItem } from 'smart-query';
+import { AnyItem } from 'react-smart-query';
 
 export interface Expense extends AnyItem {
   id: string;

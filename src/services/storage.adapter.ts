@@ -34,7 +34,7 @@ function createMemoryStorage(): AsyncStorage {
 
 function createNativeStorage(): AsyncStorage {
   const MMKV = require("react-native-mmkv").MMKV;
-  const mmkv = new MMKV({ id: "smart-query-v2" });
+  const mmkv = new MMKV({ id: "react-smart-query-v2" });
   return {
     get: (key) => Promise.resolve(mmkv.getString(key) ?? undefined),
     set: (key, value) => Promise.resolve(void mmkv.set(key, value)),

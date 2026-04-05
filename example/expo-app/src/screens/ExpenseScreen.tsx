@@ -14,7 +14,7 @@ import {
   ActivityIndicator, 
   Switch 
 } from 'react-native';
-import { useInfiniteSmartQuery } from 'smart-query';
+import { useInfiniteSmartQuery } from 'react-smart-query';
 import { fetchExpenses, Expense } from '../api/expenses';
 
 export function ExpenseScreen() {

@@ -5,7 +5,7 @@
  * Attach to globalThis only when __DEV__ is true.
  *
  * Import once as a side effect:
- *   import "smart-query/debug"; // in App.tsx
+ *   import "react-smart-query/debug"; // in App.tsx
  *
  * Then use in debugger / console:
  *   await smartQueryDebug.snapshot()

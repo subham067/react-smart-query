@@ -13,8 +13,8 @@
     "outDir": "./dist",
     "baseUrl": ".",
     "paths": {
-      "smart-query": ["./src/index.ts"],
-      "smart-query/*": ["./src/*"]
+      "react-smart-query": ["./src/index.ts"],
+      "react-smart-query/*": ["./src/*"]
     }
   },
   "include": ["src", "__tests__", "__mocks__"],

@@ -14,7 +14,7 @@
  *
  * @example
  *   import { render } from "@testing-library/react-native";
- *   import { SmartQueryTestProvider, seedCache } from "smart-query/testing";
+ *   import { SmartQueryTestProvider, seedCache } from "react-smart-query/testing";
  *
  *   beforeEach(() => seedCache(["expenses", "trip_1"], mockExpenses));
  *

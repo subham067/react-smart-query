@@ -1,14 +1,14 @@
 /**
- * smart-query — Public API
+ * react-smart-query — Public API
  *
  * Import from the package root:
- *   import { useSmartQuery, createTypedQuery, ... } from "smart-query";
+ *   import { useSmartQuery, createTypedQuery, ... } from "react-smart-query";
  *
  * Test utilities (separate entry point to keep test deps out of prod bundle):
- *   import { SmartQueryTestProvider, seedCache } from "smart-query/testing";
+ *   import { SmartQueryTestProvider, seedCache } from "react-smart-query/testing";
  *
  * Debug tools (side-effect import, dev only):
- *   import "smart-query/debug";
+ *   import "react-smart-query/debug";
  */
 
 // ── Hooks ──────────────────────────────────────────────────────────────────────
