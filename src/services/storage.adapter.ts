@@ -12,7 +12,8 @@
  * the client hydrates from real IDB on first mount.
  */
 
-import { Platform } from "react-native";
+// Removing static react-native import to support pure React web projects
+// import { Platform } from "react-native";
 import type { AsyncStorage } from "../types";
 
 export type { AsyncStorage };
@@ -121,8 +122,15 @@ function createWebStorage(): AsyncStorage {
 
 // ─── Singleton ────────────────────────────────────────────────────────────────
 
-export const storage: AsyncStorage =
-  Platform.OS === "web" ? createWebStorage() : createNativeStorage();
+// ─── Singleton ────────────────────────────────────────────────────────────────
+
+const isReactNative =
+  typeof navigator !== "undefined" &&
+  (navigator as unknown as Record<string, unknown>).product === "ReactNative";
+
+export const storage: AsyncStorage = isReactNative
+  ? createNativeStorage()
+  : createWebStorage();
 
 /** Exposed for test utilities to inject a custom adapter */
 let _overrideStorage: AsyncStorage | null = null;
