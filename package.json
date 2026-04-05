@@ -1,14 +1,14 @@
 {
-  "name": "eact-smart-query",
+  "name": "react-smart-query",
   "version": "1.0.0",
   "description": "Offline-first, normalized, cache-versioned data layer for React Native and Expo. Built on TanStack Query with MMKV (native) and IndexedDB (web).",
-  "author": "subham067 <subham067@gmail.com>",
+  "author": "Subham Ghosh <subham49ghosh@gmail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/subham067/eact-smart-query.git"
+    "url": "https://github.com/subham067/react-smart-query.git"
   },
-  "homepage": "https://github.com/subham067/eact-smart-query#readme",
+  "homepage": "https://github.com/subham067/react-smart-query#readme",
   "keywords": [
     "react-native",
     "expo",
