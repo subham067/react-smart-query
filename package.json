@@ -1,6 +1,6 @@
 {
   "name": "react-smart-query",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Offline-first, normalized, cache-versioned data layer for React Native and Expo. Built on TanStack Query with MMKV (native) and IndexedDB (web).",
   "author": "Subham Ghosh <subham49ghosh@gmail.com>",
   "license": "MIT",
