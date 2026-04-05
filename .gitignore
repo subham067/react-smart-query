@@ -1,0 +1,7 @@
+node_modules/
+dist/
+*.log
+example/expo-app/node_modules/
+example/expo-app/.expo/
+example/expo-app/web-build/
+.DS_Store

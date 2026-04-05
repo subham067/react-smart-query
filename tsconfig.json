@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "lib": ["ESNext", "DOM"],
+    "jsx": "react-native",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "paths": {
+      "smart-query": ["./src/index.ts"],
+      "smart-query/*": ["./src/*"]
+    }
+  },
+  "include": ["src", "__tests__", "__mocks__"],
+  "exclude": ["node_modules", "dist"]
+}
