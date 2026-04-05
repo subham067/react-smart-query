@@ -1,47 +1,77 @@
-# 🧠 React Smart Query
+# 🧠 react-smart-query
 
-**Production-grade, offline-first, normalized data orchestration for React Native and Web.**
-
-React Smart Query is more than just a cache; it's a high-performance normalization engine designed to handle complex, paginated lists with predictable, O(log n) mutations — even when offline.
+**Offline-first normalized data layer for React Native & Web**
 
 [![npm version](https://img.shields.io/npm/v/react-smart-query.svg)](https://www.npmjs.com/package/react-smart-query)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
 
-## 🚀 Why React Smart Query?
+## ⚡ Quick Example
 
-Handling mutations in paginated lists (Infinite Scroll) is notoriously difficult in modern UI frameworks. Standard tooling often results in:
-1. **Data Duplication:** The same resource existing in multiple pages of a query response cache, leading to out-of-sync UI components.
-2. **Inconsistent Ordering:** Newly added optimistic items appearing at the top/bottom rather than their correct sorted semantic position, causing visual "jumps" on next load.
-3. **Complex Manual Cache Logic:** Forcing developers to write intricate, error-prone traversal logic just to update a single nested item deep inside a page array.
+Get started in seconds. It looks just like the tools you already know, but with superpowers.
 
-**React Smart Query solves this by adopting a Unified Normalized Storage model.**
+```tsx
+import { useSmartQuery } from 'react-smart-query';
 
-Instead of storing data exactly as the API returns it (as a paginated chunk of arrays), React Smart Query intercepts the data, extracts individual entities (using your provided `getItemId`), and stores them in a single, perfectly sorted, globally accessible dictionary (`byId`) and array (`allIds`).
+const { data, isLoading } = useSmartQuery({
+  queryKey: ["expenses"],
+  queryFn: fetchExpenses
+});
+```
 
-- **O(log n) Sorted Mutations**: Items are inserted into the single, global sorted list using binary search. Adding a new item guarantees it instantly lands in the mathematically correct position according to your `sortComparator`.
-- **Automatic Deduplication**: Because items are normalized by ID, an item fetched in Page 1 and (erroneously) returned again in Page 3 only ever exists once in the engine.
-- **Offline-First & Auto-Sync**: A built-in mutation queue automatically captures changes made while offline, persists them to local storage (MMKV/IndexedDB), and plays them back to your server seamlessly when the connection returns.
-- **Derived Pagination**: Pagination is treated strictly as a "slice" view over your normalized data, not how the data is stored. Your UI always receives perfectly contiguous, sorted data.
-- **Memory Protected**: Automatic "soft trimming" algorithm monitors list sizes and safely drops least-recently-seen items to prevent infinite scroll memory bloat on low-end devices.
+---
 
-### How it compares to TanStack Query
+## 🚨 The Problem
 
-React Smart Query is **built on top of** TanStack Query. It uses TanStack Query for the networking, background refetching, and general request lifecycle, but completely replaces how the returned data is cached and mutated.
+TanStack Query (React Query) handles data fetching brilliantly. But as your app grows, real-world constraints start to show. Complex apps often struggle with:
 
-| Feature | TanStack Query | React Smart Query |
-| :--- | :--- | :--- |
-| **Primary Focus** | Server State Synchronization | Normalized Data Orchestration & Mutability |
-| **Data Storage** | Raw API Responses (Arrays/Objects) | Unified Normalized Dictionary (`byId` & `allIds`) |
-| **Infinite List Mutations** | Manual Cache Traversal (`setQueryData`) | `O(log n)` Binary Search Auto-Insertions |
-| **Deduplication** | Across identical URL endpoints | Across entire application by Item ID |
-| **Offline Mutations** | Difficult (Requires manual hydration/plugins) | Built-in Persistent Queue & Auto-Sync |
-| **Memory Management** | Time-based garbage collection | Time-based + Soft trimming of large lists |
+- **Pagination + Mutation Bugs**: Updating a single item buried inside page 3 of an infinite list requires complex, error-prone manual cache traversals.
+- **Offline Sync**: Surviving patchy networks and syncing user actions when they come back online.
+- **Unnecessary Re-renders**: UI components rendering more often than they need to.
+- **Large List Updates**: Finding and updating items in massive arrays without freezing the UI.
+
+---
+
+## 💡 The Solution
+
+`react-smart-query` intercepts your API responses and stores them intelligently.
+
+- **Adds offline-first support** right out of the box.
+- **Uses normalized storage** (a flat dictionary) behind the scenes for lighting-fast updates.
+- **Fixes pagination + mutation issues** automatically. No more manual cache traversal!
+- **Works on top of React Query**. It enhances your existing setup without replacing it.
+
+---
+
+## ✨ Key Features
+
+- 📶 **Offline-first caching** (MMKV for mobile, IndexedDB for web)
+- 🚀 **Normalized data structure** (`{ byId, allIds }` map) for `O(1)` updates
+- 🧠 **Smart diff updates** (minimal, surgically precise re-renders)
+- 📜 **Infinite query with normalized pagination** (no more page-splicing bugs)
+- 🌍 **Global mutation system** (add/update/remove from anywhere, without hooks)
+- 📱 **Cross-platform support**
+- 🛡️ **Memory protection** (maxItems to elegantly trim huge lists)
+
+---
+
+## ⚖️ Why Not Just TanStack Query?
+
+React Smart Query takes the heavy lifting out of state mutability. It delegates the networking to TanStack Query and completely upgrades the storage.
+
+| Feature | TanStack Query | react-smart-query |
+| :--- | :---: | :---: |
+| **Offline queue** | ❌ | ✅ |
+| **Normalized cache** | ❌ | ✅ |
+| **Pagination + mutation fix** | ❌ | ✅ |
+| **Global mutations** | ❌ | ✅ |
 
 ---
 
 ## 📦 Installation
+
+Install the library alongside its peer dependencies:
 
 ```bash
 npm install react-smart-query @tanstack/react-query react-native-mmkv
@@ -49,82 +79,148 @@ npm install react-smart-query @tanstack/react-query react-native-mmkv
 
 ---
 
-## 🛠️ Quick Start
+## 🚦 Quick Start
 
-### 1. Basic Query
+### 1. Setup
+
+Just wrap your app like you normally would. Your data layer is instantly primed.
+
+```tsx
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
+
+export default function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <YourApp />
+    </QueryClientProvider>
+  );
+}
+```
+
+### 2. Standard Query
 
 ```tsx
 import { useSmartQuery } from 'react-smart-query';
 
-const { data, isLoading } = useSmartQuery({
-  queryKey: ['profile'],
-  queryFn: () => api.get('/me'),
-  select: (res) => res.user,
-});
+function UserProfile({ userId }) {
+  const { data } = useSmartQuery({
+    queryKey: ['users', userId],
+    queryFn: () => api.getUser(userId),
+    select: (res) => res.user,
+  });
+
+  return <Text>{data?.name}</Text>;
+}
 ```
 
-### 2. Infinite Scroll (The Real Magic)
+### 3. Infinite Query
+
+This is where the magic happens. Mutating paged data is now effortless.
 
 ```tsx
-const { data, addItem, fetchNextPage } = useInfiniteSmartQuery({
-  queryKey: ['expenses'],
-  queryFn: ({ pageParam }) => api.get('/expenses', { cursor: pageParam }),
-  getNextCursor: (res) => res.nextCursor,
-  select: (res) => res.items,
-  getItemId: (item) => item.id,
-  sortComparator: (a, b) => b.createdAt - a.createdAt, // Perfect sort across all pages
-});
+import { useInfiniteSmartQuery } from 'react-smart-query';
 
-// Adding an item "just works" and inserts into the correct sorted position
-const onAdd = () => addItem({ id: '123', description: 'Coffee', createdAt: Date.now() });
+function Feed() {
+  const { data, addItem } = useInfiniteSmartQuery({
+    queryKey: ['feed'],
+    queryFn: ({ pageParam }) => api.getFeed({ cursor: pageParam }),
+    getNextCursor: (res) => res.nextCursor,
+    select: (res) => res.items,
+    getItemId: (item) => item.id,
+    sortComparator: (a, b) => b.createdAt - a.createdAt,
+  });
+
+  // Adding an item automatically sorts it into the exact right place!
+  const onNewPost = (post) => addItem(post);
+
+  return <FlatList data={data} renderItem={...} />;
+}
 ```
+
+---
+
+## 💼 Example Use Case
+
+**Scenario: An Expense Tracking App**
+
+Imagine a user is traveling through the subway and logs an expense. 
+1. `react-smart-query` immediately intercepts this.
+2. It pushes the action to an **Offline Queue**.
+3. It performs a **Global Mutation**, inserting the new expense into the normalized store.
+4. Your Infinite List jumps to life—it finds the expense, uses your `sortComparator` via binary search to place it at exactly the top of the list, and triggers a surgically precise re-render.
+5. When the user exits the subway, the queue detects the network and syncs the expense to your server.
+
+**Perfect for:** Expense Apps, Chat Apps, Social Feeds, and Dashboards.
+
+---
+
+## 🛠️ API Overview
+
+- **`useSmartQuery`**: Drop-in enhancement for viewing and caching standard API calls.
+- **`useInfiniteSmartQuery`**: The flagship hook. Takes paginated API chunks, flattens them, sorts them globally, and gives you `addItem`, `updateItem`, and `removeItem` helpers.
+- **`getSmartQueryActions`**: A global API to mutate data from outside of React components (e.g., from a push notification background handler).
 
 ---
 
 ## 🏗️ Architecture
 
-```mermaid
-graph TD
-    A[Component] -->|useInfiniteSmartQuery| B(Normalization Engine)
-    B -->|Sorted Binary Insert| C[Unified Normalized List]
-    C -->|O1 Lookup| D[(byId Map)]
-    C -->|Sorted Order| E[(allIds Array)]
-    B -->|Persist| F[Storage Adapter]
-    F -->|Mobile| G[(MMKV)]
-    F -->|Web| H[(IndexedDB)]
-    I[Global Registry] -->|Mutate from Background| B
+```text
+       UI (React Components)
+               ↓
+       Smart Query Hooks
+               ↓
+    TanStack Query (Networking)
+               ↓
+ Normalized Cache + Offline Queue
+               ↓
+   Storage (MMKV / IndexedDB)
 ```
 
 ---
 
-## 🔥 Professional Features
+## 🕵️ Debug Tools
 
-- **Mutation Conflict Guards**: Prevents stale background updates from overwriting fresher local data.
-- **Batch Updates**: Group multiple mutations into a single storage write and render.
-- **Smart Diffing**: 5-tier hybrid comparison ensures components only re-render when data actually changes.
-- **DevTools**: Inspect internal normalized state, cache hits/misses, and in-flight requests in development.
+For power users, `react-smart-query` comes with built-in development inspection tools to see exactly how your data is normalizing.
+
+```tsx
+import "react-smart-query/debug";
+import { smartQueryDebug } from "react-smart-query";
+
+// Prints the exact current state of the global { byId, allIds } maps to your console!
+await smartQueryDebug.snapshot();
+```
 
 ---
 
-## 💡 When to use?
+## 🤔 When to Use / Not Use
 
-✅ **Use if**:
-- You have high-frequency updates in paginated lists (e.g., Chat, Feeds, Transactions).
-- You need robust offline support with optimistic UI.
-- You want to eliminate "flicker" when items change positions.
+✅ **Use if:**
+- You are building offline-first apps.
+- You have large, paginated lists.
+- You have high-frequency data updates (websocket chats, real-time feeds).
 
-❌ **Avoid if**:
-- Your data is small and non-relational.
-- You don't need offline persistence or sorted lists.
+❌ **Avoid if:**
+- You are building a very small app without offline needs.
+- Your data is purely static and never mutates locally.
 
-## 📚 Full Documentation
+---
 
-For advanced usages, hooks APIs, and architectural guidelines, please see the full documentation:
-- [API Reference](./docs/API_REFERENCE.md)
-- [Guidelines & Best Practices](./docs/GUIDELINES.md)
-- [Testing & Debugging](./docs/TESTING.md)
+## 🗺️ Roadmap
+
+- [ ] DevTools UI (Visual Inspector)
+- [ ] Built-in WebSocket sync adapter
+- [ ] Lightweight Plugin System
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Whether you're fixing a bug, adding a feature, or improving documentation, check out our repository and open a Pull Request.
 
 ---
 
 ## 📄 License
+
 MIT © 2024 React Smart Query Team
